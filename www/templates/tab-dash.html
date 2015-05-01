@@ -1,0 +1,48 @@
+
+
+<ion-view view-title="Dashboard">
+  <ion-content class="padding">
+    <div class="list card">
+      
+    <div class="list card">
+      <div class="item item-divider">Bluetooth Data</div>
+      <div class="item item-body">
+        <div class="app">
+             <div id="ui">
+                  <button id="insecureButton" class="button button-block button-positive">Insecure</button>
+              </div>
+            <div class="card" >
+              <div class="item item-text-wrap" id="insecure_data">
+              </div>
+            </div>
+            <div id="ui">
+                  <button id="listViewButton" class="button button-block button-positive">Devices</button>
+              </div>
+            <div class="card" >
+              <div class="item item-text-wrap" id="list_bluetooth">
+              </div>
+            </div>
+            <div id="ui">
+                <button id="connectButton" class="button button-block button-positive">Connect</button>
+            </div>
+            <div class="card" >
+              <div class="item item-text-wrap" id="message">
+              </div>
+            </div>
+        </div>
+      </div>
+      </div>
+      <div class="item item-divider">Photo</div>
+      <div class="item item-body">
+        <div>
+           <img ng-src="{{imageTaken}}" width="200" height="200">
+           <button ng-click="getPhoto()" class="button button-block button-positive"> Take Photo</button>
+        </div>
+      </div>
+    </div>
+
+    </div>
+    
+
+  </ion-content>
+</ion-view>
