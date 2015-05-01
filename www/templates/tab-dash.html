@@ -8,13 +8,28 @@
       <div class="item item-divider">Bluetooth Data</div>
       <div class="item item-body">
         <div class="app">
-             <div id="ui">
-                  <button id="insecureButton" class="button button-block button-positive">Insecure</button>
-              </div>
-            <div class="card" >
-              <div class="item item-text-wrap" id="insecure_data">
+             <div class="card" >
+              <div class="item item-text-wrap" >
+                <h5>Data Information Bytes</h5>
+                 <div id="bytes_data">
+                 </div>
               </div>
             </div>
+            <div class="card" >
+              <div class="item item-text-wrap" >
+                <h5>Data Information Subscribe</h5>
+                 <div id="insecure_data">
+                 </div>
+              </div>
+            </div>
+
+             <div class="card" >
+              <div class="item item-text-wrap" >
+                <h5>Data Information Raw Data</h5>
+                 <div id="rawdata_data">
+                 </div>
+              </div>
+             </div>
             <div id="ui">
                   <button id="listViewButton" class="button button-block button-positive">Devices</button>
               </div>
@@ -22,9 +37,17 @@
               <div class="item item-text-wrap" id="list_bluetooth">
               </div>
             </div>
-            <div id="ui">
-                <button id="connectButton" class="button button-block button-positive">Connect</button>
-            </div>
+                <div id="ui">
+                    <button id="connectButton" class="button button-block button-positive">Connect</button>
+                </div>
+                <div class="card" >
+                  <div class="item item-text-wrap" >
+                    <h3>Input Bluetooth ID: <input id="bluetooth_id">
+                    </h3>
+                    
+                  </div>
+                 </div>
+
             <div class="card" >
               <div class="item item-text-wrap" id="message">
               </div>

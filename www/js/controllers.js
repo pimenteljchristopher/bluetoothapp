@@ -2,18 +2,20 @@
 
 angular.module('starter.controllers', [])
 .controller('DashCtrl', function($scope,Camera) {
- $scope.macAddress = "7C:7A:91:34:0F:11";
+ $scope.macAddress = "CE:7B:8D:57:DD:C8";
+  // $scope.macAddress = "7C:7A:91:34:0F:11";
 
- $scope.getPhoto = function() {
+     $scope.getPhoto = function() {
     Camera.getPicture().then(function(imageURI) {
       $scope.imageTaken=imageURI;
     }, function(err) {
       console.err(err);
     });
  };
-
+  //macAddress Bluetooth
+  
  	var app = {
-    macAddress: $scope.macAddress,  // get your mac address from bluetoothSerial.list
+    macAddress: "CE:7B:8D:57:DD:C8",  // get your mac address from bluetoothSerial.list
     chars: "",
 
 /*
@@ -30,77 +32,58 @@ angular.module('starter.controllers', [])
         document.addEventListener('deviceready', this.onDeviceReady, false);
         connectButton.addEventListener('touchend', app.manageConnection, false);
         listViewButton.addEventListener('touchend', app.listConnection, false);
-        insecureButton.addEventListener('touchend', app.inSecureConnection, false);
-
+   
     },
 
 /*
     this runs when the device is ready for user interaction:
 */
     onDeviceReady: function() {
+        // app.macAddress = document.getElementById("bluetooth_id");
         // check to see if Bluetooth is turned on.
         // this function is called only
         //if isEnabled(), below, returns success:
         var listPorts = function() {
             // list the available BT ports:
-            bluetoothSerial.list(
-                function(results) {
-                	var ob = JSON.stringify(results)
-                    app.display(JSON.stringify(results));
-                },
-                function(error) {
-                    app.display(JSON.stringify(error));
-                }
-            );
+            bluetoothSerial.list(function(devices) {
+            devices.forEach(function(device) {
+                console.log(device.id);
+                 app.listView("Id :  "+device.id + ", Name : "+device.name );
+            })
+        }, failure);
+
         }
 
         // if isEnabled returns failure, this function is called:
         var notEnabled = function() {
-        
             app.display("Bluetooth is not enabled.")
         }
-
          // check if Bluetooth is on:
         bluetoothSerial.isEnabled(
             listPorts,
             notEnabled
         );
-              var failure = function(){
-        }
+              var failure = function(){};
 
         //list device
         
-		bluetoothSerial.read(function (data) {
-		    app.connectInsecureView(data);
-		}, failure);
+		// bluetoothSerial.read(function (data) {
+		//     app.connectInsecureView(data);
+		// }, failure);
 
-		bluetoothSerial.readUntil('\n', function (data) {
-		   app.display(data);
-		}, failure);
-		bluetoothSerial.subscribe('\n', function (data) {
-		    console.log(data);
-		    app.display(data);
-		}, failure);
-		bluetoothSerial.subscribeRawData(function (data) {
-	    var bytes = new Uint8Array(data);
-	    console.log(bytes);
-	     app.display(bytes);
-	}, failure);
+		// bluetoothSerial.readUntil('\n', function (data) {
+		//    app.connectInsecureView("Read"+data);
+		// }, failure);
+		// bluetoothSerial.subscribe('\n', function (data) {
+		//     console.log(data);
+		//     app.display("Subscribe"+data);
+		// }, failure);
+	// 	bluetoothSerial.subscribeRawData(function (data) {
+	//     var bytes = new Uint8Array(data);
+	//     console.log(bytes);
+	//      app.connectInsecureView(bytes);
+	// }, failure);
     },
-    inSecureConnection: function(){
-        var connectfailure = function(){
-            app.connectInsecure("failed");
-        }
-        var connectSuccess = function(data){
-            app.connectInsecureView("Success"+data);
-            bluetoothSerial.read(function (data) {
-                console.log(data);
-                   app.connectInsecureView("this data please"+data);
-            }, failure);
-        }
-        bluetoothSerial.connectInsecure(app.macAddress, connectSuccess, connectFailure);
-    }
-    ,
 /*
     Connects if not connected, and disconnects if connected:
 */  listConnection: function(){
@@ -109,17 +92,18 @@ angular.module('starter.controllers', [])
         bluetoothSerial.list(function(devices) {
             devices.forEach(function(device) {
                 console.log(device.id);
-                 app.listView(device.id);
+                 app.listView("Id :  "+device.id + ", Name : "+device.name);
             })
         }, failure);
     }
     ,manageConnection: function() {
+        var dataBt =  document.getElementById('bluetooth_id').value;
+        app.macAddress = dataBt;
         var connect = function () {
             // if not connected, do this:
             // clear the screen and display an attempt to connect
             app.clear();
-            app.display("Attempting to connect." +
-                "Make sure the serial port is open on the target device.");
+            app.display(dataBt+"Attempting to connect." +"Make sure the serial port is open on the target device.");
             // attempt to connect:
             bluetoothSerial.connect(
                 app.macAddress,  // device to connect to
@@ -150,20 +134,22 @@ angular.module('starter.controllers', [])
         // if you get a good Bluetooth serial connection:
         app.display("Connected to: " + app.macAddress);
         var success= function(data){
-              app.display("Data: " + data);
-        }
+              app.connectRawView("Data:"+data);
+        };
         var failure = function(){
-
-        }
+        };
+        var bytesData = function(data){
+          app.connectBytesView(data);
+        };
         // change the button's name:
         connectButton.innerHTML = "Disconnect";
-        // set up a listener to listen for newlines
-        // and display any new data that's come in since
-        // the last newline:
-        bluetoothSerial.read(success, failure);
+        //subscribe data
+        bluetoothSerial.subscribeRawData(success, failure);
+        //read data bytes
+        bluetoothSerial.available(bytesData, failure);
         bluetoothSerial.subscribe('\n', function (data) {
             app.clear();
-            app.display(data);
+            app.connectInsecureView(data);
         });
     },
 
@@ -188,28 +174,43 @@ angular.module('starter.controllers', [])
 */
     showError: function(error) {
         app.display(error);
+         connectButton.innerHTML = "Connect";
     },
 
 /*
     appends @message to the message div:
-*/  
+*/  connectBytesView:function(message){
+         var bytes_data = document.getElementById("bytes_data"), // the message div
+            lineBreak = document.createElement("br"),     // a line break
+            label = document.createTextNode(message);     // create the label
+         bytes_data.innerHTML = "";
+        bytes_data.appendChild(lineBreak);          // add a line break
+        bytes_data.appendChild(label);
+        bytes_data.appendChild(lineBreak);  
+    },
     connectInsecureView:function(message){
-         var listView = document.getElementById("insecure_data"); // the message div
-           listView.innerHTML = "";
+         var dataBluetooth = document.getElementById("insecure_data"), // the message div
             lineBreak = document.createElement("br"),     // a line break
             label = document.createTextNode(message);     // create the label
-
-        listView.appendChild(lineBreak);          // add a line break
-        listView.appendChild(label);
-        listView.appendChild(lineBreak);  
-    }
-    ,
+         dataBluetooth.innerHTML = "";
+        dataBluetooth.appendChild(lineBreak);          // add a line break
+        dataBluetooth.appendChild(label);
+        dataBluetooth.appendChild(lineBreak);  
+    },
+     connectRawView:function(message){
+         var dataBluetooth = document.getElementById("rawdata_data"), // the message div
+            lineBreak = document.createElement("br"),     // a line break
+            label = document.createTextNode(message);     // create the label
+         dataBluetooth.innerHTML = "";
+        dataBluetooth.appendChild(lineBreak);          // add a line break
+        dataBluetooth.appendChild(label);
+        dataBluetooth.appendChild(lineBreak);  
+    },
     listView:function(message){
-         var listView = document.getElementById("list_bluetooth"); // the message div
-           listView.innerHTML = "";
+         var listView = document.getElementById("list_bluetooth"), // the message div
             lineBreak = document.createElement("br"),     // a line break
             label = document.createTextNode(message);     // create the label
-
+         listView.innerHTML = "";
         listView.appendChild(lineBreak);          // add a line break
         listView.appendChild(label);
         listView.appendChild(lineBreak);  
@@ -218,7 +219,6 @@ angular.module('starter.controllers', [])
         var display = document.getElementById("message"), // the message div
             lineBreak = document.createElement("br"),     // a line break
             label = document.createTextNode(message);     // create the label
-
         display.appendChild(lineBreak);          // add a line break
         display.appendChild(label);              // add the message node
     },
