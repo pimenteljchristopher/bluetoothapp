@@ -1,0 +1,2 @@
+C:\xampp\htdocs\Working App\BluetoothApp\Bluetooth\platforms\android\build\intermediates\classes\debug
+C:\xampp\htdocs\Working App\BluetoothApp\Bluetooth\platforms\android\build\intermediates\pre-dexed\debug\classes-71f920f1a2638b43d70244f4231fabe8d807a40a.jar
